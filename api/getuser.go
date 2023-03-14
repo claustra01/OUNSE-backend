@@ -9,7 +9,7 @@ import (
 
 func GetUser(c echo.Context) error {
 
-	type json struct {
+	type response struct {
 		UserId string
 		Name   string
 	}
@@ -22,7 +22,7 @@ func GetUser(c echo.Context) error {
 	db.Find(&array)
 	for _, u := range array {
 		if u.Id.String() == token {
-			obj := new(json)
+			obj := new(response)
 			obj.UserId = u.UserId
 			obj.Name = u.Name
 			return c.JSON(http.StatusOK, obj)
