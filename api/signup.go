@@ -56,13 +56,6 @@ func SignUp(c echo.Context) error {
 	user.Password = password
 	db.Psql.Create(&user)
 
-	// フレンド初期化
-	friend := new(db.Friend)
-	friend.UserId = id
-	friend.RequestUser = []string{}
-	friend.FriendUser = []string{}
-	db.Psql.Create(&friend)
-
 	obj.Result = "OK"
 	obj.Message = "ID(" + id + ") is registered!"
 	return c.JSON(http.StatusOK, obj)
