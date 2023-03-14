@@ -18,8 +18,8 @@ func GetFriend(c echo.Context) error {
 
 	// フレンド情報取得
 	obj := new(response)
-	db.Psql.Where("user_id = ?", user).First(&obj.FriendList)
-	db.Psql.Where("friend_id = ?", user).Where("is_request = ?", true).First(&obj.RequestList)
+	db.Psql.Where("user_id = ?", user).Find(&obj.FriendList)
+	db.Psql.Where("friend_id = ?", user).Where("is_request = ?", true).Find(&obj.RequestList)
 
 	return c.JSON(http.StatusOK, obj)
 }

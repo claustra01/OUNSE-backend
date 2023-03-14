@@ -26,6 +26,8 @@ func RemoveFriend(c echo.Context) error {
 	rec := new(db.Friend)
 	db.Psql.Where("user_id = ?", user).Where("friend_id = ?", friend).First(&rec)
 	db.Psql.Delete(&rec)
+	db.Psql.Where("user_id = ?", friend).Where("friend_id = ?", user).Where("is_request = ?", false).First(&rec)
+	db.Psql.Delete(&rec)
 
 	return c.JSON(http.StatusOK, nil)
 }
