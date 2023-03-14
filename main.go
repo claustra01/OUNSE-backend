@@ -9,6 +9,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 
 	"hackz-allo/api"
+	"hackz-allo/database"
 )
 
 func main() {
@@ -37,6 +38,9 @@ func main() {
 		},
 		AllowCredentials: true,
 	}))
+
+	// DB接続
+	database.Connect()
 
 	// DB初期化 開発用
 	e.GET("/api/initialization", api.Initialization)
