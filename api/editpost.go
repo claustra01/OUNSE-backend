@@ -1,7 +1,7 @@
 package api
 
 import (
-	"hackz-allo/database"
+	"hackz-allo/db"
 	"hackz-allo/utils"
 	"net/http"
 	"time"
@@ -17,23 +17,25 @@ func EditPost(c echo.Context) error {
 		Body  string `json:"body"`
 	}
 
+	jst, err := time.LoadLocation("Asia/Tokyo")
+	if err != nil {
+		panic(err)
+	}
+
 	// クエリ展開
 	o := new(json)
 	if err := c.Bind(o); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	db := database.Connect()
-
 	// 投稿更新
-	p := new(database.Post)
-	db.Where("id = ?", o.Id).First(&p)
+	p := new(db.Post)
+	db.Psql.Where("id = ?", o.Id).First(&p)
 	p.Title = o.Title
 	p.Body = o.Body
-	p.Time = utils.TimeToString(time.Now())
-	db.Save(&p)
+	p.Time = utils.TimeToString(time.Now().In(jst))
+	db.Psql.Save(&p)
 
 	// 更新時間を返す
-	database.Close(db)
-	return c.String(http.StatusOK, utils.TimeToString(time.Now()))
+	return c.String(http.StatusOK, utils.TimeToString(time.Now().In(jst)))
 }

@@ -1,24 +1,28 @@
 package api
 
 import (
-	"hackz-allo/database"
+	"hackz-allo/db"
 	"net/http"
+	"os"
 
 	"github.com/labstack/echo/v4"
 )
 
 func Initialization(c echo.Context) error {
 
-	db := database.Connect()
+	pw := c.QueryParam("pw")
 
-	db.Exec("DROP TABLE IF EXISTS users")
-	db.Exec("DROP TABLE IF EXISTS posts")
-	db.Exec("DROP TABLE IF EXISTS friends")
+	if pw != os.Getenv("INIT_PASSWORD") {
+		return c.String(http.StatusOK, "Failed")
+	}
 
-	db.AutoMigrate(database.User{})
-	db.AutoMigrate(database.Post{})
-	db.AutoMigrate(database.Friend{})
+	db.Psql.Exec("DROP TABLE IF EXISTS users")
+	db.Psql.Exec("DROP TABLE IF EXISTS posts")
+	db.Psql.Exec("DROP TABLE IF EXISTS friends")
 
-	database.Close(db)
-	return c.String(http.StatusOK, "Initializaton")
+	db.Psql.AutoMigrate(db.User{})
+	db.Psql.AutoMigrate(db.Post{})
+	db.Psql.AutoMigrate(db.Friend{})
+
+	return c.String(http.StatusOK, "Successed")
 }

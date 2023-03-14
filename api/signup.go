@@ -1,7 +1,7 @@
 package api
 
 import (
-	"hackz-allo/database"
+	"hackz-allo/db"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -30,12 +30,11 @@ func SignUp(c echo.Context) error {
 	name := o.Name
 	password := o.Password
 
-	db := database.Connect()
 	obj := new(response)
 
 	// ユーザー名重複チェック
-	array := []database.User{}
-	db.Find(&array)
+	array := []db.User{}
+	db.Psql.Find(&array)
 	dup := false
 	for _, u := range array {
 		if u.UserId == id {
@@ -45,28 +44,26 @@ func SignUp(c echo.Context) error {
 	if dup {
 		obj.Result = "Failed"
 		obj.Message = "ID(" + id + ")は既に使われています"
-		database.Close(db)
 		return c.JSON(http.StatusOK, obj)
 	}
 
 	// ユーザー登録
 	uuidObj, _ := uuid.NewUUID()
-	user := new(database.User)
+	user := new(db.User)
 	user.Id = uuidObj
 	user.UserId = id
 	user.Name = name
 	user.Password = password
-	db.Create(&user)
+	db.Psql.Create(&user)
 
 	// フレンド初期化
-	friend := new(database.Friend)
+	friend := new(db.Friend)
 	friend.UserId = id
 	friend.RequestUser = []string{}
 	friend.FriendUser = []string{}
-	db.Create(&friend)
+	db.Psql.Create(&friend)
 
 	obj.Result = "OK"
 	obj.Message = "ID(" + id + ") is registered!"
-	database.Close(db)
 	return c.JSON(http.StatusOK, obj)
 }

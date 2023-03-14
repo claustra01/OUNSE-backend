@@ -1,7 +1,7 @@
 package api
 
 import (
-	"hackz-allo/database"
+	"hackz-allo/db"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -27,25 +27,22 @@ func LogIn(c echo.Context) error {
 	id := o.Id
 	password := o.Password
 
-	db := database.Connect()
 	obj := new(response)
 
 	// ログイン判定
-	array := []database.User{}
-	db.Find(&array)
+	array := []db.User{}
+	db.Psql.Find(&array)
 	for _, u := range array {
 		if u.UserId == id {
 			if u.Password == password {
 				// 成功
 				obj.Result = "OK"
 				obj.Message = u.Id.String()
-				database.Close(db)
 				return c.JSON(http.StatusOK, obj)
 			} else {
 				// パスワードが違う時
 				obj.Result = "Failed"
 				obj.Message = "パスワードが違います"
-				database.Close(db)
 				return c.JSON(http.StatusOK, obj)
 			}
 		}
@@ -54,6 +51,5 @@ func LogIn(c echo.Context) error {
 	// ユーザーが見つからない時
 	obj.Result = "Failed"
 	obj.Message = "ユーザーが見つかりません"
-	database.Close(db)
 	return c.JSON(http.StatusOK, obj)
 }
