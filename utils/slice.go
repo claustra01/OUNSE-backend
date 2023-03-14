@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"hackz-allo/database"
+	"hackz-allo/db"
 	"math"
 )
 
@@ -15,7 +15,7 @@ func RemoveFromSlice(strings []string, search string) []string {
 	return result
 }
 
-func SortPost(posts []database.Post, limit int) []database.Post {
+func SortPost(posts []db.Post, limit int) []db.Post {
 	l := len(posts)
 	for i := 0; i < l-1; i++ {
 		for j := i + 1; j < l; j++ {
