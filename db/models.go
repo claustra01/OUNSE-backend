@@ -18,7 +18,7 @@ type Post struct {
 }
 
 type Friend struct {
-	UserId      string
-	FriendUser  []string `gorm:"type:text"`
-	RequestUser []string `gorm:"type:text"`
+	IsRequest bool
+	UserId    string
+	FriendId  string
 }
