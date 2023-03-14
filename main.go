@@ -48,8 +48,8 @@ func main() {
 
 	// ユーザー
 	e.GET("api/getuser", api.GetUser)
-	e.POST("api/sendfriend", api.SendFriend)
-	e.POST("api/removefriend", api.RemoveFriend)
+	e.PUT("api/sendfriend", api.SendFriend)
+	e.PUT("api/removefriend", api.RemoveFriend)
 
 	// 投稿
 	e.POST("api/createpost", api.CreatePost)
