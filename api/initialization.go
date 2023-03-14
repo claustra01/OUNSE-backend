@@ -24,5 +24,5 @@ func Initialization(c echo.Context) error {
 	db.Psql.AutoMigrate(db.Post{})
 	db.Psql.AutoMigrate(db.Friend{})
 
-	return c.String(http.StatusOK, "Successed")
+	return c.String(http.StatusOK, "Successful")
 }

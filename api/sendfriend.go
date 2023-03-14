@@ -73,5 +73,5 @@ func SendFriend(c echo.Context) error {
 		db.Psql.Create(&u)
 	}
 
-	return c.JSON(http.StatusOK, nil)
+	return c.String(http.StatusOK, "request is successful")
 }
