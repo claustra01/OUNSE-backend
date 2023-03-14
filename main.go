@@ -28,7 +28,7 @@ func main() {
 
 	// CORSの設定
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{os.Getenv("CLIENT_URL_LOCAL"), os.Getenv("CLIENT_URL_REMOTE")},
+		AllowOrigins: []string{os.Getenv("CLIENT_URL_LOCAL_1"), os.Getenv("CLIENT_URL_LOCAL_2"), os.Getenv("CLIENT_URL_REMOTE")},
 		AllowMethods: []string{
 			http.MethodGet,
 			http.MethodPut,
