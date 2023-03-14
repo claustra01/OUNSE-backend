@@ -2,11 +2,9 @@ package api
 
 import (
 	"hackz-allo/db"
-	"hackz-allo/utils"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"golang.org/x/exp/slices"
 )
 
 func SendFriend(c echo.Context) error {
@@ -24,22 +22,56 @@ func SendFriend(c echo.Context) error {
 	user := o.User
 	friend := o.Friend
 
-	// レコード取得
-	recu := new(db.Friend)
-	db.Psql.Where("user_id = ?", user).First(&recu)
-	recf := new(db.Friend)
-	db.Psql.Where("user_id = ?", user).First(&recf)
-
-	// 追加して保存
-	if slices.Contains(recf.RequestUser, user) {
-		recu.FriendUser = append(recu.FriendUser, friend)
-		recf.FriendUser = append(recf.FriendUser, user)
-		recf.RequestUser = utils.RemoveFromSlice(recf.RequestUser, user)
-	} else {
-		recu.RequestUser = append(recu.RequestUser, friend)
+	// ユーザー存在確認
+	arr := []db.User{}
+	db.Psql.Find(&arr)
+	exist := false
+	for _, u := range arr {
+		if u.UserId == friend {
+			exist = true
+		}
 	}
-	db.Psql.Save(&recu)
-	db.Psql.Save(&recf)
+	if !exist {
+		return c.String(http.StatusOK, "ユーザーが見つかりません")
+	}
 
-	return c.JSON(http.StatusOK, nil)
+	// 重複リクエスト確認
+	arr2 := []db.Friend{}
+	db.Psql.Find(&arr2)
+	req := false
+	for _, f := range arr2 {
+		if f.UserId == user && f.FriendId == friend {
+			req = true
+		}
+	}
+	if req {
+		return c.String(http.StatusOK, "既にフレンドかリクエスト済みです")
+	}
+
+	// 既にリクエストを受け取っているか
+	req = false
+	db.Psql.Where("user_id = ?", friend).Find(&arr2)
+	for _, f := range arr2 {
+		if f.FriendId == user {
+			req = true
+		}
+	}
+
+	// フレンド追加
+	u := new(db.Friend)
+	u.UserId = user
+	u.FriendId = friend
+	if req {
+		u.IsRequest = false
+		db.Psql.Create(&u)
+		f := new(db.Friend)
+		db.Psql.Where("user_id = ?", friend).Where("friend_id = ?", user).First(&f)
+		f.IsRequest = false
+		db.Psql.Where("user_id = ?", friend).Where("friend_id = ?", user).Save(&f)
+	} else {
+		u.IsRequest = true
+		db.Psql.Create(&u)
+	}
+
+	return c.String(http.StatusOK, "request is successful")
 }

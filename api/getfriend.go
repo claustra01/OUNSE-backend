@@ -9,11 +9,17 @@ import (
 
 func GetFriend(c echo.Context) error {
 
+	type response struct {
+		FriendList  []db.Friend
+		RequestList []db.Friend
+	}
+
 	user := c.QueryParam("user_id")
 
 	// フレンド情報取得
-	obj := new(db.Friend)
-	db.Psql.Where("user_id = ?", user).First(&obj)
+	obj := new(response)
+	db.Psql.Where("user_id = ?", user).Find(&obj.FriendList)
+	db.Psql.Where("friend_id = ?", user).Where("is_request = ?", true).Find(&obj.RequestList)
 
 	return c.JSON(http.StatusOK, obj)
 }

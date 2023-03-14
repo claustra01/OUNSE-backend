@@ -2,7 +2,6 @@ package api
 
 import (
 	"hackz-allo/db"
-	"hackz-allo/utils"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -23,16 +22,12 @@ func RemoveFriend(c echo.Context) error {
 	user := o.User
 	friend := o.Friend
 
-	// レコード取得
+	// 削除
 	rec := new(db.Friend)
-	db.Psql.Where("user_id = ?", user).First(&rec)
-	r := rec.RequestUser
-	f := rec.FriendUser
-
-	// 削除して保存
-	rec.RequestUser = utils.RemoveFromSlice(r, friend)
-	rec.FriendUser = utils.RemoveFromSlice(f, friend)
-	db.Psql.Save(&rec)
+	db.Psql.Where("user_id = ?", user).Where("friend_id = ?", friend).First(&rec)
+	db.Psql.Delete(&rec)
+	db.Psql.Where("user_id = ?", friend).Where("friend_id = ?", user).Where("is_request = ?", false).First(&rec)
+	db.Psql.Delete(&rec)
 
 	return c.JSON(http.StatusOK, nil)
 }
