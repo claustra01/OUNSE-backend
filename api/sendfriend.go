@@ -22,11 +22,36 @@ func SendFriend(c echo.Context) error {
 	user := o.User
 	friend := o.Friend
 
-	// 既にリクエストを受け取っているか
+	// ユーザー存在確認
+	arr := []db.User{}
+	db.Psql.Find(&arr)
+	exist := false
+	for _, u := range arr {
+		if u.UserId == friend {
+			exist = true
+		}
+	}
+	if !exist {
+		return c.String(http.StatusOK, "ユーザーが見つかりません")
+	}
+
+	// 重複リクエスト確認
+	arr2 := []db.Friend{}
+	db.Psql.Find(&arr2)
 	req := false
-	arr := []db.Friend{}
-	db.Psql.Where("user_id = ?", friend).Find(&arr)
-	for _, f := range arr {
+	for _, f := range arr2 {
+		if f.UserId == user && f.FriendId == friend {
+			req = true
+		}
+	}
+	if req {
+		return c.String(http.StatusOK, "既にフレンドかリクエスト済みです")
+	}
+
+	// 既にリクエストを受け取っているか
+	req = false
+	db.Psql.Where("user_id = ?", friend).Find(&arr2)
+	for _, f := range arr2 {
 		if f.FriendId == user {
 			req = true
 		}
