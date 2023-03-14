@@ -44,7 +44,7 @@ func SignUp(c echo.Context) error {
 	}
 	if dup {
 		obj.Result = "Failed"
-		obj.Message = "ID: " + id + " is used."
+		obj.Message = "ID(" + id + ")は既に使われています"
 		return c.JSON(http.StatusOK, obj)
 	}
 
