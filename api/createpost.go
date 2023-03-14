@@ -1,7 +1,7 @@
 package api
 
 import (
-	"hackz-allo/database"
+	"hackz-allo/db"
 	"hackz-allo/utils"
 	"net/http"
 	"time"
@@ -24,19 +24,16 @@ func CreatePost(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	db := database.Connect()
-
 	// 投稿作成
 	uuidObj, _ := uuid.NewUUID()
-	post := new(database.Post)
+	post := new(db.Post)
 	post.Id = uuidObj
 	post.Title = o.Title
 	post.Body = o.Body
 	post.Time = utils.TimeToString(time.Now())
 	post.UserId = o.User
-	db.Create(&post)
+	db.Psql.Create(&post)
 
 	// 投稿時間を返す
-	database.Close(db)
 	return c.String(http.StatusOK, utils.TimeToString(time.Now()))
 }

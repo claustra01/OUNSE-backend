@@ -1,7 +1,7 @@
 package api
 
 import (
-	"hackz-allo/database"
+	"hackz-allo/db"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -9,13 +9,11 @@ import (
 
 func GetFriend(c echo.Context) error {
 
-	db := database.Connect()
 	user := c.QueryParam("user_id")
 
 	// フレンド情報取得
-	obj := new(database.Friend)
-	db.Where("user_id = ?", user).First(&obj)
+	obj := new(db.Friend)
+	db.Psql.Where("user_id = ?", user).First(&obj)
 
-	database.Close(db)
 	return c.JSON(http.StatusOK, obj)
 }

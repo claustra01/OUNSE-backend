@@ -1,7 +1,7 @@
 package api
 
 import (
-	"hackz-allo/database"
+	"hackz-allo/db"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -9,16 +9,13 @@ import (
 
 func Initialization(c echo.Context) error {
 
-	db := database.Connect()
+	db.Psql.Exec("DROP TABLE IF EXISTS users")
+	db.Psql.Exec("DROP TABLE IF EXISTS posts")
+	db.Psql.Exec("DROP TABLE IF EXISTS friends")
 
-	db.Exec("DROP TABLE IF EXISTS users")
-	db.Exec("DROP TABLE IF EXISTS posts")
-	db.Exec("DROP TABLE IF EXISTS friends")
+	db.Psql.AutoMigrate(db.User{})
+	db.Psql.AutoMigrate(db.Post{})
+	db.Psql.AutoMigrate(db.Friend{})
 
-	db.AutoMigrate(database.User{})
-	db.AutoMigrate(database.Post{})
-	db.AutoMigrate(database.Friend{})
-
-	database.Close(db)
 	return c.String(http.StatusOK, "Initializaton")
 }

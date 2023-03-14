@@ -1,7 +1,7 @@
 package api
 
 import (
-	"hackz-allo/database"
+	"hackz-allo/db"
 	"hackz-allo/utils"
 	"net/http"
 
@@ -24,13 +24,11 @@ func SendFriend(c echo.Context) error {
 	user := o.User
 	friend := o.Friend
 
-	db := database.Connect()
-
 	// レコード取得
-	recu := new(database.Friend)
-	db.Where("user_id = ?", user).First(&recu)
-	recf := new(database.Friend)
-	db.Where("user_id = ?", user).First(&recf)
+	recu := new(db.Friend)
+	db.Psql.Where("user_id = ?", user).First(&recu)
+	recf := new(db.Friend)
+	db.Psql.Where("user_id = ?", user).First(&recf)
 
 	// 追加して保存
 	if slices.Contains(recf.RequestUser, user) {
@@ -40,9 +38,8 @@ func SendFriend(c echo.Context) error {
 	} else {
 		recu.RequestUser = append(recu.RequestUser, friend)
 	}
-	db.Save(&recu)
-	db.Save(&recf)
+	db.Psql.Save(&recu)
+	db.Psql.Save(&recf)
 
-	database.Close(db)
 	return c.JSON(http.StatusOK, nil)
 }
