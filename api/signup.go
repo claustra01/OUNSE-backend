@@ -21,9 +21,6 @@ func SignUp(c echo.Context) error {
 		Message string
 	}
 
-	db := database.Connect()
-	obj := new(response)
-
 	// クエリ展開
 	o := new(json)
 	if err := c.Bind(o); err != nil {
@@ -32,6 +29,9 @@ func SignUp(c echo.Context) error {
 	id := o.Id
 	name := o.Name
 	password := o.Password
+
+	db := database.Connect()
+	obj := new(response)
 
 	// ユーザー名重複チェック
 	array := []database.User{}
@@ -45,6 +45,7 @@ func SignUp(c echo.Context) error {
 	if dup {
 		obj.Result = "Failed"
 		obj.Message = "ID(" + id + ")は既に使われています"
+		database.Close(db)
 		return c.JSON(http.StatusOK, obj)
 	}
 
@@ -65,6 +66,7 @@ func SignUp(c echo.Context) error {
 	db.Create(&friend)
 
 	obj.Result = "OK"
-	obj.Message = "ID: " + id + " is registered!"
+	obj.Message = "ID(" + id + ") is registered!"
+	database.Close(db)
 	return c.JSON(http.StatusOK, obj)
 }

@@ -19,9 +19,6 @@ func LogIn(c echo.Context) error {
 		Message string
 	}
 
-	db := database.Connect()
-	obj := new(response)
-
 	// クエリ展開
 	o := new(json)
 	if err := c.Bind(o); err != nil {
@@ -29,6 +26,9 @@ func LogIn(c echo.Context) error {
 	}
 	id := o.Id
 	password := o.Password
+
+	db := database.Connect()
+	obj := new(response)
 
 	// ログイン判定
 	array := []database.User{}
@@ -39,11 +39,13 @@ func LogIn(c echo.Context) error {
 				// 成功
 				obj.Result = "OK"
 				obj.Message = u.Id.String()
+				database.Close(db)
 				return c.JSON(http.StatusOK, obj)
 			} else {
 				// パスワードが違う時
 				obj.Result = "Failed"
 				obj.Message = "パスワードが違います"
+				database.Close(db)
 				return c.JSON(http.StatusOK, obj)
 			}
 		}
@@ -52,5 +54,6 @@ func LogIn(c echo.Context) error {
 	// ユーザーが見つからない時
 	obj.Result = "Failed"
 	obj.Message = "ユーザーが見つかりません"
+	database.Close(db)
 	return c.JSON(http.StatusOK, obj)
 }

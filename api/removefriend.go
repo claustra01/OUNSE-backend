@@ -15,8 +15,6 @@ func RemoveFriend(c echo.Context) error {
 		Friend string `json:"friend_id"`
 	}
 
-	db := database.Connect()
-
 	// クエリ展開
 	o := new(json)
 	if err := c.Bind(o); err != nil {
@@ -24,6 +22,8 @@ func RemoveFriend(c echo.Context) error {
 	}
 	user := o.User
 	friend := o.Friend
+
+	db := database.Connect()
 
 	// レコード取得
 	rec := new(database.Friend)
@@ -36,5 +36,6 @@ func RemoveFriend(c echo.Context) error {
 	rec.FriendUser = utils.RemoveFromSlice(f, friend)
 	db.Save(&rec)
 
+	database.Close(db)
 	return c.JSON(http.StatusOK, nil)
 }

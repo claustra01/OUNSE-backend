@@ -25,8 +25,10 @@ func GetUser(c echo.Context) error {
 			obj := new(response)
 			obj.UserId = u.UserId
 			obj.Name = u.Name
+			database.Close(db)
 			return c.JSON(http.StatusOK, obj)
 		}
 	}
+	database.Close(db)
 	return c.JSON(http.StatusOK, nil)
 }

@@ -16,8 +16,6 @@ func SendFriend(c echo.Context) error {
 		Friend string `json:"friend_id"`
 	}
 
-	db := database.Connect()
-
 	// クエリ展開
 	o := new(json)
 	if err := c.Bind(o); err != nil {
@@ -25,6 +23,8 @@ func SendFriend(c echo.Context) error {
 	}
 	user := o.User
 	friend := o.Friend
+
+	db := database.Connect()
 
 	// レコード取得
 	recu := new(database.Friend)
@@ -43,5 +43,6 @@ func SendFriend(c echo.Context) error {
 	db.Save(&recu)
 	db.Save(&recf)
 
+	database.Close(db)
 	return c.JSON(http.StatusOK, nil)
 }
