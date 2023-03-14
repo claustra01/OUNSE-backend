@@ -13,9 +13,11 @@ func Initialization(c echo.Context) error {
 
 	db.Exec("DROP TABLE IF EXISTS users")
 	db.Exec("DROP TABLE IF EXISTS posts")
+	db.Exec("DROP TABLE IF EXISTS friends")
 
 	db.AutoMigrate(database.User{})
 	db.AutoMigrate(database.Post{})
+	db.AutoMigrate(database.Friend{})
 
 	return c.String(http.StatusOK, "Initializaton")
 }

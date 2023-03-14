@@ -16,3 +16,9 @@ type Post struct {
 	Time   string
 	UserId string
 }
+
+type Friend struct {
+	UserId      string
+	FriendUser  []string `gorm:"type:text"`
+	RequestUser []string `gorm:"type:text"`
+}
