@@ -2,11 +2,9 @@ package api
 
 import (
 	"hackz-allo/db"
-	"hackz-allo/utils"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"golang.org/x/exp/slices"
 )
 
 func SendFriend(c echo.Context) error {
@@ -24,22 +22,31 @@ func SendFriend(c echo.Context) error {
 	user := o.User
 	friend := o.Friend
 
-	// レコード取得
-	recu := new(db.Friend)
-	db.Psql.Where("user_id = ?", user).First(&recu)
-	recf := new(db.Friend)
-	db.Psql.Where("user_id = ?", user).First(&recf)
-
-	// 追加して保存
-	if slices.Contains(recf.RequestUser, user) {
-		recu.FriendUser = append(recu.FriendUser, friend)
-		recf.FriendUser = append(recf.FriendUser, user)
-		recf.RequestUser = utils.RemoveFromSlice(recf.RequestUser, user)
-	} else {
-		recu.RequestUser = append(recu.RequestUser, friend)
+	// 既にリクエストを受け取っているか
+	req := false
+	arr := []db.Friend{}
+	db.Psql.Where("user_id = ?", friend).Find(&arr)
+	for _, f := range arr {
+		if f.FriendId == user {
+			req = true
+		}
 	}
-	db.Psql.Save(&recu)
-	db.Psql.Save(&recf)
+
+	// フレンド追加
+	u := new(db.Friend)
+	u.UserId = user
+	u.FriendId = friend
+	if req {
+		u.IsRequest = false
+		db.Psql.Create(&u)
+		f := new(db.Friend)
+		db.Psql.Where("user_id = ?", friend).Where("friend_id = ?", user).First(&f)
+		f.IsRequest = false
+		db.Psql.Where("user_id = ?", friend).Where("friend_id = ?", user).Save(&f)
+	} else {
+		u.IsRequest = true
+		db.Psql.Create(&u)
+	}
 
 	return c.JSON(http.StatusOK, nil)
 }

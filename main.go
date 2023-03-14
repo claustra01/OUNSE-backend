@@ -52,8 +52,8 @@ func main() {
 
 	// ユーザー
 	e.GET("api/getuser", api.GetUser)
-	e.PUT("api/sendfriend", api.SendFriend)
-	e.PUT("api/removefriend", api.RemoveFriend)
+	e.POST("api/sendfriend", api.SendFriend)
+	e.DELETE("api/removefriend", api.RemoveFriend)
 	e.GET("api/getfriend", api.GetFriend)
 
 	// 投稿
