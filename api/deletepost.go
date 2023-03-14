@@ -10,8 +10,6 @@ import (
 func DeletePost(c echo.Context) error {
 
 	db := database.Connect()
-
-	// クエリ展開
 	id := c.QueryParam("id")
 
 	// 投稿削除
@@ -20,5 +18,6 @@ func DeletePost(c echo.Context) error {
 	db.Where("id = ?", id).Delete(&database.Post{})
 
 	// 削除した投稿を返す
+	database.Close(db)
 	return c.JSON(http.StatusOK, p)
 }

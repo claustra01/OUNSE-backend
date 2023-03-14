@@ -18,13 +18,13 @@ func CreatePost(c echo.Context) error {
 		User  string `json:"user_id"`
 	}
 
-	db := database.Connect()
-
 	// クエリ展開
 	o := new(json)
 	if err := c.Bind(o); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
+
+	db := database.Connect()
 
 	// 投稿作成
 	uuidObj, _ := uuid.NewUUID()
@@ -37,5 +37,6 @@ func CreatePost(c echo.Context) error {
 	db.Create(&post)
 
 	// 投稿時間を返す
+	database.Close(db)
 	return c.String(http.StatusOK, utils.TimeToString(time.Now()))
 }

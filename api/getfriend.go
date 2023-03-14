@@ -16,5 +16,6 @@ func GetFriend(c echo.Context) error {
 	obj := new(database.Friend)
 	db.Where("user_id = ?", user).First(&obj)
 
+	database.Close(db)
 	return c.JSON(http.StatusOK, obj)
 }

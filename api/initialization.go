@@ -19,5 +19,6 @@ func Initialization(c echo.Context) error {
 	db.AutoMigrate(database.Post{})
 	db.AutoMigrate(database.Friend{})
 
+	database.Close(db)
 	return c.String(http.StatusOK, "Initializaton")
 }

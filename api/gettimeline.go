@@ -37,5 +37,6 @@ func GetTimeLine(c echo.Context) error {
 	// 投稿ソート
 	obj.posts = utils.SortPost(p, 48)
 
+	database.Close(db)
 	return c.JSON(http.StatusOK, obj)
 }

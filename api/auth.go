@@ -17,8 +17,10 @@ func Auth(c echo.Context) error {
 	db.Find(&array)
 	for _, u := range array {
 		if u.Id.String() == token {
+			database.Close(db)
 			return c.String(http.StatusOK, "OK")
 		}
 	}
+	database.Close(db)
 	return c.String(http.StatusOK, "Failed")
 }

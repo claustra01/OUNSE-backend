@@ -17,13 +17,13 @@ func EditPost(c echo.Context) error {
 		Body  string `json:"body"`
 	}
 
-	db := database.Connect()
-
 	// クエリ展開
 	o := new(json)
 	if err := c.Bind(o); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
+
+	db := database.Connect()
 
 	// 投稿更新
 	p := new(database.Post)
@@ -34,5 +34,6 @@ func EditPost(c echo.Context) error {
 	db.Save(&p)
 
 	// 更新時間を返す
+	database.Close(db)
 	return c.String(http.StatusOK, utils.TimeToString(time.Now()))
 }
