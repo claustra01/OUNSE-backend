@@ -20,5 +20,5 @@ type Post struct {
 type Friend struct {
 	IsRequest bool
 	UserId    string
-	FollowId  string
+	FriendId  string
 }

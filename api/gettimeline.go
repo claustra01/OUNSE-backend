@@ -21,7 +21,7 @@ func GetTimeLine(c echo.Context) error {
 	db.Psql.Where("user_id = ?", user).Find(&p)
 	for _, r := range rec {
 		q := []db.Post{}
-		db.Psql.Where("user_id = ?", r.FollowId).Find(&q)
+		db.Psql.Where("user_id = ?", r.FriendId).Find(&q)
 		p = append(p, q...)
 	}
 

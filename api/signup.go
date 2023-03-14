@@ -33,10 +33,10 @@ func SignUp(c echo.Context) error {
 	obj := new(response)
 
 	// ユーザー名重複チェック
-	array := []db.User{}
-	db.Psql.Find(&array)
+	arr := []db.User{}
+	db.Psql.Find(&arr)
 	dup := false
-	for _, u := range array {
+	for _, u := range arr {
 		if u.UserId == id {
 			dup = true
 		}
