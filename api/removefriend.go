@@ -1,7 +1,7 @@
 package api
 
 import (
-	"hackz-allo/database"
+	"hackz-allo/db"
 	"hackz-allo/utils"
 	"net/http"
 
@@ -23,19 +23,16 @@ func RemoveFriend(c echo.Context) error {
 	user := o.User
 	friend := o.Friend
 
-	db := database.Connect()
-
 	// レコード取得
-	rec := new(database.Friend)
-	db.Where("user_id = ?", user).First(&rec)
+	rec := new(db.Friend)
+	db.Psql.Where("user_id = ?", user).First(&rec)
 	r := rec.RequestUser
 	f := rec.FriendUser
 
 	// 削除して保存
 	rec.RequestUser = utils.RemoveFromSlice(r, friend)
 	rec.FriendUser = utils.RemoveFromSlice(f, friend)
-	db.Save(&rec)
+	db.Psql.Save(&rec)
 
-	database.Close(db)
 	return c.JSON(http.StatusOK, nil)
 }
