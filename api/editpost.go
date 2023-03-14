@@ -17,6 +17,11 @@ func EditPost(c echo.Context) error {
 		Body  string `json:"body"`
 	}
 
+	jst, err := time.LoadLocation("Asia/Tokyo")
+	if err != nil {
+		panic(err)
+	}
+
 	// クエリ展開
 	o := new(json)
 	if err := c.Bind(o); err != nil {
@@ -28,9 +33,9 @@ func EditPost(c echo.Context) error {
 	db.Psql.Where("id = ?", o.Id).First(&p)
 	p.Title = o.Title
 	p.Body = o.Body
-	p.Time = utils.TimeToString(time.Now())
+	p.Time = utils.TimeToString(time.Now().In(jst))
 	db.Psql.Save(&p)
 
 	// 更新時間を返す
-	return c.String(http.StatusOK, utils.TimeToString(time.Now()))
+	return c.String(http.StatusOK, utils.TimeToString(time.Now().In(jst)))
 }

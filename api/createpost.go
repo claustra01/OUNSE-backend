@@ -18,6 +18,11 @@ func CreatePost(c echo.Context) error {
 		User  string `json:"user_id"`
 	}
 
+	jst, err := time.LoadLocation("Asia/Tokyo")
+	if err != nil {
+		panic(err)
+	}
+
 	// クエリ展開
 	o := new(json)
 	if err := c.Bind(o); err != nil {
@@ -30,10 +35,10 @@ func CreatePost(c echo.Context) error {
 	post.Id = uuidObj
 	post.Title = o.Title
 	post.Body = o.Body
-	post.Time = utils.TimeToString(time.Now())
+	post.Time = utils.TimeToString(time.Now().In(jst))
 	post.UserId = o.User
 	db.Psql.Create(&post)
 
 	// 投稿時間を返す
-	return c.String(http.StatusOK, utils.TimeToString(time.Now()))
+	return c.String(http.StatusOK, utils.TimeToString(time.Now().In(jst)))
 }
