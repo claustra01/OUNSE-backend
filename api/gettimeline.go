@@ -10,15 +10,8 @@ import (
 
 func GetTimeLine(c echo.Context) error {
 
-	type response struct {
-		posts []database.Post
-	}
-
 	db := database.Connect()
 	user := c.QueryParam("user_id")
-
-	obj := new(response)
-	obj.posts = []database.Post{}
 
 	// フレンド情報取得
 	rec := new(database.Friend)
@@ -35,8 +28,8 @@ func GetTimeLine(c echo.Context) error {
 	}
 
 	// 投稿ソート
-	obj.posts = utils.SortPost(p, 48)
+	p = utils.SortPost(p, 48)
 
 	database.Close(db)
-	return c.JSON(http.StatusOK, obj)
+	return c.JSON(http.StatusOK, p)
 }

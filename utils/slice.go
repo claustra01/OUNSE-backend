@@ -19,7 +19,7 @@ func SortPost(posts []database.Post, limit int) []database.Post {
 	l := len(posts)
 	for i := 0; i < l-1; i++ {
 		for j := i + 1; j < l; j++ {
-			if posts[i].Time > posts[j].Time {
+			if posts[i].Time < posts[j].Time {
 				posts[i], posts[j] = posts[j], posts[i]
 			}
 		}
