@@ -13,16 +13,15 @@ func GetTimeLine(c echo.Context) error {
 	user := c.QueryParam("user_id")
 
 	// フレンド情報取得
-	rec := new(db.Friend)
-	db.Psql.Where("user_id = ?", user).First(&rec)
-	friends := rec.FriendUser
+	rec := []db.Friend{}
+	db.Psql.Where("user_id = ?", user).Where("is_request = ?", false).Find(&rec)
 
 	// 投稿取得
 	p := []db.Post{}
 	db.Psql.Where("user_id = ?", user).Find(&p)
-	for _, f := range friends {
+	for _, r := range rec {
 		q := []db.Post{}
-		db.Psql.Where("user_id = ?", f).Find(&q)
+		db.Psql.Where("user_id = ?", r.FollowId).Find(&q)
 		p = append(p, q...)
 	}
 
